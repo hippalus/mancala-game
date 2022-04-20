@@ -17,20 +17,14 @@ cache:
   paths:
     - .m2/repository
 
-build: &build
+build:
   stage: build
   script:
     - 'mvn $MAVEN_CLI_OPTS clean package -DskipTests -f mancala/pom.xml'
-  except:
-    variables:
-      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 verify: 
   stage: test
   script:
     - 'mvn $MAVEN_CLI_OPTS clean verify -f mancala/pom.xml'
-  except:
-    variables:
-      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 
