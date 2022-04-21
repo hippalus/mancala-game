@@ -1,0 +1,112 @@
+package com.bol.mancala.game;
+
+import com.bol.mancala.game.exception.MancalaGameException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+public final class GameImpl implements Game {
+
+  private final String id;
+  private final Board board;
+  private final Players players;
+  private final AtomicBoolean isGameOver;
+
+  public GameImpl(final String id, final Board board, final Players players) {
+    this.id = id;
+    this.board = board;
+    this.players = players;
+    this.isGameOver = new AtomicBoolean(false);
+  }
+
+  @Override
+  public String id() {
+    return this.id;
+  }
+
+  @Override
+  public void play(final Move move) {
+    this.checkMoveConditions(move);
+    final int position = move.position();
+
+    final Pit selected = this.board().getPit(position);
+    final int selectedStones = selected.getStones();
+    selected.takeAllStones();
+
+    final int targetPositionOfMove = this.targetPosition(position, selectedStones);
+    final Pit last = this.board().getPit(targetPositionOfMove);
+    final boolean lastInEmptyPit = last.isEmpty();
+
+    for (int i = 1; i <= selectedStones; i++) {
+      this.board().getPit(this.targetPosition(position, i)).putStone();
+    }
+
+    final Pit bigPit = this.board().getBigPit(position);
+
+    if (!this.board().isBigPit(position + selectedStones)) {
+      this.players().turn();
+      if (lastInEmptyPit) {
+        final Pit oppositePit = this.board().getOppositePit(targetPositionOfMove);
+        if (!oppositePit.isEmpty()) {
+          bigPit.putStoneFrom(last);
+          bigPit.putStoneFrom(oppositePit);
+        }
+      }
+    }
+
+    this.checkGameOver(position);
+  }
+
+  private void checkMoveConditions(final Move move) {
+    if (!this.players.current().equals(move.player())) {
+      throw new MancalaGameException("It's not your turn!");
+    }
+    if (this.isGameOver()) {
+      throw new MancalaGameException("Game Over!");
+    }
+    if (this.board.isBigPit(move.position())) {
+      throw new MancalaGameException(move.position() + " is a big pit. You can't move from this position!");
+    }
+  }
+
+  private int targetPosition(final int position, final int stones) {
+    final int target = (position + stones) % this.board.size();
+    if (target == this.board.getOppositeBigPit(position).position()) {
+      return (target + 1) % this.board.size();
+    }
+    return target;
+  }
+
+
+  private void checkGameOver(final int position) {
+    if (this.getTotalStonesOnSide(position) == 0) {
+      this.board.getPitsOnOppositeSide(position).forEach(this.board.getOppositeBigPit(position)::putStoneFrom);
+      this.isGameOver.set(true);
+    }
+  }
+
+  private int getTotalStonesOnSide(final int position) {
+    final List<Pit> pissOnSide = this.board.getPitsOnSide(position);
+    return pissOnSide.stream().map(Pit::getStones).reduce(Integer::sum).orElse(-1);
+  }
+
+  @Override
+  public void play(final Move... moves) {
+    Arrays.stream(moves).forEach(this::play);
+  }
+
+  @Override
+  public Board board() {
+    return this.board;
+  }
+
+  @Override
+  public boolean isGameOver() {
+    return this.isGameOver.get();
+  }
+
+  @Override
+  public Players players() {
+    return this.players;
+  }
+}

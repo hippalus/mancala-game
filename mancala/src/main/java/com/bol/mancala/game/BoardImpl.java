@@ -1,8 +1,11 @@
 package com.bol.mancala.game;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public final class BoardImpl implements Board {
 
   private static final int DEFAULT_STONE_AMOUNT = 6;
@@ -15,18 +18,23 @@ public final class BoardImpl implements Board {
   }
 
   public BoardImpl(final int stoneAmount, final int pitAmount) {
-    this.pits = new ArrayList<>();
+    this(initPits(stoneAmount, pitAmount));
+  }
+
+  private static List<Pit> initPits(final int stoneAmount, final int pitAmount) {
+    final List<Pit> pits = new ArrayList<>();
     final int firstBigPitPosition = pitAmount / 2 - 1;
     final int secondBigPitPosition = pitAmount - 1;
     for (int position = 0; position < pitAmount; position++) {
       if (position == firstBigPitPosition || position == secondBigPitPosition) {
         Pit bigPit = new Pit(position, 0);
-        this.pits.add(bigPit);
+        pits.add(bigPit);
       } else {
         Pit pit = new Pit(position, stoneAmount);
-        this.pits.add(pit);
+        pits.add(pit);
       }
     }
+    return pits;
   }
 
   @Override
@@ -45,7 +53,7 @@ public final class BoardImpl implements Board {
   }
 
   @Override
-  public Pit getOppositePit(int position) {
+  public Pit getOppositePit(final int position) {
     return this.getPit(this.getOppositeIndex(position));
   }
 
@@ -54,7 +62,7 @@ public final class BoardImpl implements Board {
   }
 
   @Override
-  public Pit getBigPit(int position) {
+  public Pit getBigPit(final int position) {
     if (position < this.size() / 2) {
       return this.getPit(firstBigPitPosition());
     }
@@ -70,21 +78,25 @@ public final class BoardImpl implements Board {
   }
 
   @Override
-  public Pit getOppositeBigPit(int position) {
+  public Pit getOppositeBigPit(final int position) {
     return this.getBigPit(this.getOppositeIndex(position));
   }
 
   @Override
-  public List<Pit> getPitsOnSide(int position) {
+  public List<Pit> getPitsOnSide(final int position) {
     if (position < this.size() / 2) {
       return this.pits.subList(0, firstBigPitPosition());
     }
     return this.pits.subList(this.size() / 2, secondBigPitPosition());
-
   }
 
   @Override
   public List<Pit> getPitsOnOppositeSide(int position) {
     return this.getPitsOnSide(this.getOppositeIndex(position));
+  }
+
+  @Override
+  public List<Pit> getPits() {
+    return Collections.unmodifiableList(this.pits);
   }
 }

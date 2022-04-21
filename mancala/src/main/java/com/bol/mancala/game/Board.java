@@ -19,4 +19,6 @@ public interface Board {
   List<Pit> getPitsOnSide(int position);
 
   List<Pit> getPitsOnOppositeSide(int position);
+
+  List<Pit> getPits();
 }

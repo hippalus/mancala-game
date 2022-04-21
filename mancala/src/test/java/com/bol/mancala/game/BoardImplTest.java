@@ -12,14 +12,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 class BoardImplTest {
 
   @Test
-  void testBoardSize() {
+  void boardSize() {
     final Board board = new BoardImpl();
     assertThat(board.size()).isEqualTo(14);
   }
 
   @ParameterizedTest
   @MethodSource("oppositePairParameters")
-  void testOppositePit(final int position1, final int position2) {
+  void oppositePit(final int position1, final int position2) {
     //given:
     final Board board = new BoardImpl();
     //when and then
@@ -40,7 +40,7 @@ class BoardImplTest {
 
 
   @Test
-  void testGetPitsOnFirstSideByPosition() {
+  void getPitsOnFirstSideByPosition() {
     //given:
     final Board board = new BoardImpl();
     //when:
@@ -58,7 +58,7 @@ class BoardImplTest {
   }
 
   @Test
-  void testGetPitsOnSecondSideByPosition() {
+  void getPitsOnSecondSideByPosition() {
     //given:
     final Board board = new BoardImpl();
     //when:
@@ -76,7 +76,7 @@ class BoardImplTest {
   }
 
   @Test
-  void testOwnBigPitByPosition() {
+  void ownBigPitByPosition() {
     //given:
     final var board = new BoardImpl();
     //when:
