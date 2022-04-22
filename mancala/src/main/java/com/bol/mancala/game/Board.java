@@ -21,4 +21,12 @@ public interface Board {
   List<Pit> getPitsOnOppositeSide(int position);
 
   List<Pit> getPits();
+
+  default int firstBigPitPosition() {
+    return this.size() / 2 - 1;
+  }
+
+  default int secondBigPitPosition() {
+    return this.size() - 1;
+  }
 }

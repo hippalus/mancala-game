@@ -7,119 +7,97 @@ import com.bol.mancala.game.exception.MancalaGameException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class GameImplTest {
 
-  @Test
-  void createNewGame() {
-    //given:
-    final Game game = new GameImpl(
+  public static final Player JOHN = new Player("John", 6);
+  public static final Player MARY = new Player("Mary", 13);
+  private Game game;
+
+  @BeforeEach
+  void setUp() {
+    this.game = createGame();
+  }
+
+
+  private GameImpl createGame() {
+    final Board newBoard = new BoardImpl();
+    return new GameImpl(
         UUID.randomUUID().toString(),
-        new BoardImpl(),
-        new PlayersImpl(
-            new Player("John"),
-            new Player("Mary")
-        )
+        newBoard,
+        new PlayersImpl(JOHN, MARY)
     );
-
-    //when:
-    final Board board = game.board();
-
-    //then:
-    assertThat(game.id()).isNotNull();
-    verifyBoard(board, 6, 6, 6, 6, 6, 6, 0, 6, 6, 6, 6, 6, 6, 0);
   }
 
   @Test
+  void createNewGame() {
+    //when:
+    final Board board = this.game.board();
+
+    //then:
+    assertThat(this.game.id()).isNotNull();
+    verifyBoard(board, 6, 6, 6, 6, 6, 6, 0, 6, 6, 6, 6, 6, 6, 0);
+  }
+
+
+  @Test
   void throwExBigPitMove() {
-    //given:
-    final Game game = new GameImpl(
-        UUID.randomUUID().toString(),
-        new BoardImpl(),
-        new PlayersImpl(
-            new Player("John"),
-            new Player("Mary")
-        )
-    );
     //when and then:
-    Exception exception = catchException(() -> game.play(Move.of(new Player("John"), 6)));
+    final Exception exception = catchException(() -> this.game.play(Move.of(JOHN, 6)));
 
     assertThat(exception)
         .isInstanceOf(MancalaGameException.class)
-        .hasMessage("6 is a big pit. You can't move from this position!");
+        .hasMessage("Can not move from this position!");
+  }
+
+  @Test
+  void throwExEmptyPitMove() {
+    //when and then:
+    this.game.play(Move.of(JOHN, 0));// sow
+
+    final Exception exception = catchException(() -> this.game.play(Move.of(JOHN, 0)));
+
+    assertThat(exception)
+        .isInstanceOf(MancalaGameException.class)
+        .hasMessage("Can not play with empty pit!");
   }
 
   @Test
   void playerJohnMakesMove() {
-    //given:
-    final Game game = new GameImpl(
-        UUID.randomUUID().toString(),
-        new BoardImpl(),
-        new PlayersImpl(
-            new Player("John"),
-            new Player("Mary")
-        )
-    );
     //when:
-    game.play(Move.of(new Player("John"), 0));
+    this.game.play(Move.of(JOHN, 0));
 
     //then:
-    verifyBoard(game.board(), 0, 7, 7, 7, 7, 7, 1, 6, 6, 6, 6, 6, 6, 0);
+    verifyBoard(this.game.board(), 0, 7, 7, 7, 7, 7, 1, 6, 6, 6, 6, 6, 6, 0);
   }
 
   @Test
   void playerJohnMakesMoveFrom2() {
-    //given:
-    final Game game = new GameImpl(
-        UUID.randomUUID().toString(),
-        new BoardImpl(),
-        new PlayersImpl(
-            new Player("John"),
-            new Player("Mary")
-        )
-    );
     //when:
-    game.play(Move.of(new Player("John"), 2));
+    this.game.play(Move.of(JOHN, 2));
 
     //then:
-    verifyBoard(game.board(), 6, 6, 0, 7, 7, 7, 1, 7, 7, 6, 6, 6, 6, 0);
+    verifyBoard(this.game.board(), 6, 6, 0, 7, 7, 7, 1, 7, 7, 6, 6, 6, 6, 0);
   }
 
   @Test
   void sameTurn() {
-    //given:
-    final Game game = new GameImpl(
-        UUID.randomUUID().toString(),
-        new BoardImpl(),
-        new PlayersImpl(
-            new Player("John"),
-            new Player("Mary")
-        )
-    );
     //when:
-    game.play(Move.of(new Player("John"), 0));
+    this.game.play(Move.of(JOHN, 0));
 
     //then:
-    assertThat(game.players().current()).isEqualTo(new Player("John"));
+    assertThat(this.game.players().current()).isEqualTo(JOHN);
   }
 
   @Test
   void throwExInvalidPlayerTurn() {
-    //given:
-    final Game game = new GameImpl(
-        UUID.randomUUID().toString(),
-        new BoardImpl(),
-        new PlayersImpl(
-            new Player("John"),
-            new Player("Mary")
-        )
-    );
     //when:
-    game.play(Move.of(new Player("John"), 2));
+    this.game.play(Move.of(JOHN, 2));
 
     //then:
-    Exception exception = catchException(() -> game.play(Move.of(new Player("John"), 3)));
+    final Exception exception = catchException(() -> this.game.play(Move.of(JOHN, 3)));
 
     assertThat(exception)
         .isInstanceOf(MancalaGameException.class)
@@ -128,51 +106,29 @@ class GameImplTest {
 
   @Test
   void changeTurn() {
-    //given:
-    final Game game = new GameImpl(
-        UUID.randomUUID().toString(),
-        new BoardImpl(),
-        new PlayersImpl(
-            new Player("John"),
-            new Player("Mary")
-        )
-    );
     //when:
-    game.play(Move.of(new Player("John"), 5));
+    this.game.play(Move.of(JOHN, 5));
 
     //then:
-    assertThat(game.players().current()).isEqualTo(new Player("Mary"));
+    assertThat(this.game.players().current()).isEqualTo(MARY);
   }
 
   @Test
   void twoMovesSamePlayer() {
-    //given:
-    final Game game = new GameImpl(
-        UUID.randomUUID().toString(),
-        new BoardImpl(),
-        new PlayersImpl(
-            new Player("John"),
-            new Player("Mary")
-        )
-    );
     //when:
-    game.play(
-        Move.of(new Player("John"), 0),
-        Move.of(new Player("John"), 1)
+    this.game.play(
+        Move.of(JOHN, 0),
+        Move.of(JOHN, 1)
     );
 
     //then:
-    verifyBoard(game.board(), 0, 0, 8, 8, 8, 8, 2, 7, 7, 6, 6, 6, 6, 0);
+    verifyBoard(this.game.board(), 0, 0, 8, 8, 8, 8, 2, 7, 7, 6, 6, 6, 6, 0);
   }
 
   @Test
   void takeAllOppositePitStones() {
     //given:
-    final Players players = new PlayersImpl(
-        new Player("John"),
-        new Player("Mary")
-    );
-    final var game = new GameImpl(
+    final Game game = new GameImpl(
         UUID.randomUUID().toString(),
         new BoardImpl(
             List.of(
@@ -192,11 +148,11 @@ class GameImplTest {
                 new Pit(13, 8)
             )
         ),
-        players
+        new PlayersImpl(JOHN, MARY)
     );
 
     //when:
-    game.play(Move.of(new Player("John"), 2));
+    game.play(Move.of(JOHN, 2));
 
     //then:
     verifyBoard(game.board(), 0, 5, 0, 0, 11, 11, 7, 10, 9, 0, 0, 11, 0, 8);
@@ -204,34 +160,22 @@ class GameImplTest {
 
   @Test
   void twoMoves2Player() {
-    //given:
-    final Game game = new GameImpl(
-        UUID.randomUUID().toString(),
-        new BoardImpl(),
-        new PlayersImpl(
-            new Player("John"),
-            new Player("Mary")
-        )
-    );
     //when:
-    game.play(
-        Move.of(new Player("John"), 0),
-        Move.of(new Player("John"), 1),
-        Move.of(new Player("Mary"), 7)
+    this.game.play(
+        Move.of(JOHN, 0),
+        Move.of(JOHN, 1),
+        Move.of(MARY, 7)
     );
 
     //then:
-    verifyBoard(game.board(), 0, 0, 8, 8, 8, 8, 2, 0, 8, 7, 7, 7, 0, 9);
+    verifyBoard(this.game.board(), 0, 0, 8, 8, 8, 8, 2, 0, 8, 7, 7, 7, 0, 9);
   }
 
 
   @Test
   void gameOverConditions() {
     //given:
-    final Players players = new PlayersImpl(
-        new Player("John"),
-        new Player("Mary")
-    );
+    final Players players = new PlayersImpl(JOHN, MARY);
     final var game = new GameImpl(
         UUID.randomUUID().toString(),
         new BoardImpl(
@@ -254,17 +198,16 @@ class GameImplTest {
         ),
         players
     );
-    players.turn(); //  turn manually to Mary for testing
-
+    players.turn();
     //when:
-    game.play(Move.of(new Player("Mary"), 12));
+    game.play(Move.of(MARY, 12));
 
     //then:
     verifyBoard(game.board(), 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 0, 0, 50);
     assertThat(game.isGameOver()).isTrue();
 
     //and then:
-    final Exception exception = catchException(() -> game.play(Move.of(new Player("Mary"), 0)));
+    final Exception exception = catchException(() -> game.play(Move.of(JOHN, 0)));
     assertThat(exception).isInstanceOf(MancalaGameException.class)
         .hasMessage("Game Over!");
   }
@@ -272,8 +215,8 @@ class GameImplTest {
   @Test
   void oppositePitStones2() {
     //given:
-    Player mary = new Player("Mary");
-    Player john = new Player("John");
+    final Player john = JOHN;
+    final Player mary = MARY;
     final Game game = new GameImpl(
         UUID.randomUUID().toString(),
         new BoardImpl(),

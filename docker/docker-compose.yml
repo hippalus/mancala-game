@@ -1,0 +1,24 @@
+version: "3.9"
+services:
+  mancala-db:
+    container_name: mancala-db
+    image: mongo:latest
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root123
+    ports:
+      - "27017:27017"
+
+  mancala-api:
+    container_name: mancala-api
+    image: mancala-api
+    build:
+      context: ../mancala
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mancala-db
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://root:root123@mancala-db:27017
+      - SPRING_DATA_MONGODB_DATABASE=mancala-db

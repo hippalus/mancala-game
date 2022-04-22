@@ -1,0 +1,7 @@
+spring:
+  data:
+    mongodb:
+      database: mancala-db
+      uri: mongodb://root:root123@localhost:27017
+server:
+  port: 8081

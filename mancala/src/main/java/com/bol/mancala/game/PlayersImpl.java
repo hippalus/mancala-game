@@ -24,4 +24,9 @@ public final class PlayersImpl implements Players {
   public void turn() {
     this.players.add(this.players.remove());
   }
+
+  @Override
+  public List<Player> players() {
+    return this.players.stream().toList();
+  }
 }

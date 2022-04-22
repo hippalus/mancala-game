@@ -4,7 +4,7 @@ public interface Game {
 
   String id();
 
-  void play(Move move);
+  Game play(Move move);
 
   void play(Move... moves);
 

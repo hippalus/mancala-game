@@ -1,5 +1,7 @@
 package com.bol.mancala.game;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public record Pit(int position, AtomicInteger stones) {
@@ -12,6 +14,7 @@ public record Pit(int position, AtomicInteger stones) {
     return this.stones.get();
   }
 
+  @JsonIgnore
   public boolean isEmpty() {
     return this.getStones() == 0;
   }
@@ -28,5 +31,22 @@ public record Pit(int position, AtomicInteger stones) {
     final int stones = pit.getStones();
     pit.takeAllStones();
     this.stones.set(this.getStones() + stones);
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    final Pit pit = (Pit) o;
+    return this.position == pit.position && Objects.equals(this.stones.get(), pit.stones.get());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.position, this.stones.get());
   }
 }

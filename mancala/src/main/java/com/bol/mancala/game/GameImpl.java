@@ -25,7 +25,7 @@ public final class GameImpl implements Game {
   }
 
   @Override
-  public void play(final Move move) {
+  public Game play(final Move move) {
     this.checkMoveConditions(move);
     final int position = move.position();
 
@@ -55,17 +55,27 @@ public final class GameImpl implements Game {
     }
 
     this.checkGameOver(position);
+    return this;
   }
 
   private void checkMoveConditions(final Move move) {
-    if (!this.players.current().equals(move.player())) {
-      throw new MancalaGameException("It's not your turn!");
-    }
     if (this.isGameOver()) {
       throw new MancalaGameException("Game Over!");
     }
+
     if (this.board.isBigPit(move.position())) {
-      throw new MancalaGameException(move.position() + " is a big pit. You can't move from this position!");
+      throw new MancalaGameException("Can not move from this position!");
+    }
+
+    if (this.board.getPit(move.position()).isEmpty()) {
+      throw new MancalaGameException("Can not play with empty pit!");
+    }
+
+    final Pit bigPitOfMover = this.board.getBigPit(move.position());
+    final int realBigPitOfMover = move.player().bigPitPosition();
+
+    if (!this.players.current().equals(move.player()) || bigPitOfMover.position() != realBigPitOfMover) {
+      throw new MancalaGameException("It's not your turn!");
     }
   }
 

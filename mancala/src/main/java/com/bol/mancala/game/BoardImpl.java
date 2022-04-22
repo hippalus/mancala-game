@@ -27,10 +27,10 @@ public final class BoardImpl implements Board {
     final int secondBigPitPosition = pitAmount - 1;
     for (int position = 0; position < pitAmount; position++) {
       if (position == firstBigPitPosition || position == secondBigPitPosition) {
-        Pit bigPit = new Pit(position, 0);
+        final Pit bigPit = new Pit(position, 0);
         pits.add(bigPit);
       } else {
-        Pit pit = new Pit(position, stoneAmount);
+        final Pit pit = new Pit(position, stoneAmount);
         pits.add(pit);
       }
     }
@@ -64,17 +64,9 @@ public final class BoardImpl implements Board {
   @Override
   public Pit getBigPit(final int position) {
     if (position < this.size() / 2) {
-      return this.getPit(firstBigPitPosition());
+      return this.getPit(this.firstBigPitPosition());
     }
-    return this.getPit(secondBigPitPosition());
-  }
-
-  private int firstBigPitPosition() {
-    return this.size() / 2 - 1;
-  }
-
-  private int secondBigPitPosition() {
-    return this.size() - 1;
+    return this.getPit(this.secondBigPitPosition());
   }
 
   @Override
@@ -85,13 +77,13 @@ public final class BoardImpl implements Board {
   @Override
   public List<Pit> getPitsOnSide(final int position) {
     if (position < this.size() / 2) {
-      return this.pits.subList(0, firstBigPitPosition());
+      return this.pits.subList(0, this.firstBigPitPosition());
     }
-    return this.pits.subList(this.size() / 2, secondBigPitPosition());
+    return this.pits.subList(this.size() / 2, this.secondBigPitPosition());
   }
 
   @Override
-  public List<Pit> getPitsOnOppositeSide(int position) {
+  public List<Pit> getPitsOnOppositeSide(final int position) {
     return this.getPitsOnSide(this.getOppositeIndex(position));
   }
 

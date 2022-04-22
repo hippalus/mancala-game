@@ -1,5 +1,5 @@
 package com.bol.mancala.game;
 
-public record Player(String name) {
+public record Player(String name, int bigPitPosition) {
 
 }
