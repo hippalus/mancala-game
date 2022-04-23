@@ -8,6 +8,7 @@ import com.bol.mancala.IT;
 import com.bol.mancala.game.Game;
 import com.bol.mancala.game.GameOptions;
 import com.bol.mancala.game.Pit;
+import com.bol.mancala.game.exception.DataNotFoundException;
 import com.bol.mancala.infra.adapter.data.mongo.MancalaMongoAdapter;
 import com.bol.mancala.infra.adapter.data.mongo.document.MancalaGameDocument;
 import com.bol.mancala.infra.adapter.data.mongo.document.PitDocument;
@@ -80,6 +81,18 @@ class MancalaMongoAdapterIT extends AbstractIT {
         .verifyComplete();
   }
 
+  @Test
+  void throwNotFoundExWhenFindByMethodReturnEmpty() {
+
+    final String invalidId = "INVALID_ID";
+
+    this.mancalaMongoAdapter.retrieve(invalidId)
+        .log()
+        .as(StepVerifier::create)
+        .expectError(DataNotFoundException.class)
+        .verify();
+  }
+
   @SneakyThrows
   @Test
   void play() {
@@ -89,21 +102,23 @@ class MancalaMongoAdapterIT extends AbstractIT {
         MancalaGameDocument.class
     );
 
-    final MancalaGameDocument expectedGame = this.mapper.readValue(
+    final MancalaGameDocument expectedGameDoc = this.mapper.readValue(
         ResourceUtils.getFile("src/test/resources/first-player-first-move.json"),
         MancalaGameDocument.class
     );
+    final Game expected = expectedGameDoc.toModel();
 
     final MancalaGameDocument persistedGame = this.mancalaMongoRepository.save(mancalaGameDocument).block();
 
-    this.mancalaMongoAdapter.play(persistedGame.getId(), 1)
+    this.mancalaMongoAdapter.play(mancalaGameDocument.getId(), 1)
         .log()
         .as(StepVerifier::create)
         .consumeNextWith(playedGame -> {
           assertThat(playedGame).isNotNull()
-              .returns(expectedGame.getId(), from(Game::id))
-              .returns(expectedGame.getPits().stream().map(PitDocument::toModel).toList(), from(game -> game.board().getPits()))
-              .returns(expectedGame.getPlayers(), from(game -> game.players().players()));
+              .returns(expected.id(), from(Game::id))
+              .returns(expected.board().getPits(), from(game -> game.board().getPits()))
+              .returns(expected.players().players(), from(game -> game.players().players()))
+              .returns(expected.players().current(), from(game -> game.players().current()));
         })
         .verifyComplete();
   }

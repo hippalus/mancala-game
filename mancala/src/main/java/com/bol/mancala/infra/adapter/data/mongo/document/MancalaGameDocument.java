@@ -32,7 +32,7 @@ public class MancalaGameDocument {
   private List<PitDocument> pits;
 
   @Field(name = "players")
-  private List<Player> players;
+  private List<PlayerDocument> players;
 
   @CreatedDate
   @Field(name = "created_at")
@@ -45,8 +45,8 @@ public class MancalaGameDocument {
   public Game toModel() {
     return new GameImpl(
         this.getId(),
-        new BoardImpl(getPits().stream().map(PitDocument::toModel).toList()),
-        new PlayersImpl(new ArrayDeque<>(this.players))
+        new BoardImpl(this.getPits().stream().map(PitDocument::toModel).toList()),
+        new PlayersImpl(new ArrayDeque<>(this.getPlayers().stream().map(PlayerDocument::toModel).toList()))
     );
   }
 }

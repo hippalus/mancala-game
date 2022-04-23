@@ -10,9 +10,11 @@ import com.bol.mancala.game.Pit;
 import com.bol.mancala.game.Player;
 import com.bol.mancala.game.Players;
 import com.bol.mancala.game.PlayersImpl;
+import com.bol.mancala.game.exception.DataNotFoundException;
 import com.bol.mancala.game.port.MancalaGamePort;
 import com.bol.mancala.infra.adapter.data.mongo.document.MancalaGameDocument;
 import com.bol.mancala.infra.adapter.data.mongo.document.PitDocument;
+import com.bol.mancala.infra.adapter.data.mongo.document.PlayerDocument;
 import com.bol.mancala.infra.adapter.data.mongo.respository.MancalaMongoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,7 +39,9 @@ public class MancalaMongoAdapter implements MancalaGamePort {
 
   @Override
   public Mono<Game> retrieve(final String gameId) {
-    return this.mancalaMongoRepository.findById(gameId).map(MancalaGameDocument::toModel);
+    return this.mancalaMongoRepository.findById(gameId)
+        .map(MancalaGameDocument::toModel)
+        .switchIfEmpty(Mono.error(new DataNotFoundException("Game not found for id: " + gameId)));
   }
 
   @Override
@@ -58,11 +62,15 @@ public class MancalaMongoAdapter implements MancalaGamePort {
     return MancalaGameDocument.builder()
         .id(game.id())
         .pits(game.board().getPits().stream().map(this::toDocument).toList())
-        .players(game.players().players())
+        .players(game.players().players().stream().map(this::toDocument).toList())
         .build();
   }
 
   private PitDocument toDocument(final Pit pit) {
     return new PitDocument(pit.position(), pit.getStones());
+  }
+
+  private PlayerDocument toDocument(final Player player) {
+    return new PlayerDocument(player.name(), player.bigPitPosition());
   }
 }
