@@ -101,14 +101,13 @@ class MancalaMongoAdapterIT extends AbstractIT {
         ResourceUtils.getFile("src/test/resources/new-game.json"),
         MancalaGameDocument.class
     );
+    this.mancalaMongoRepository.save(mancalaGameDocument).block();
 
     final MancalaGameDocument expectedGameDoc = this.mapper.readValue(
         ResourceUtils.getFile("src/test/resources/first-player-first-move.json"),
         MancalaGameDocument.class
     );
     final Game expected = expectedGameDoc.toModel();
-
-    final MancalaGameDocument persistedGame = this.mancalaMongoRepository.save(mancalaGameDocument).block();
 
     this.mancalaMongoAdapter.play(mancalaGameDocument.getId(), 1)
         .log()

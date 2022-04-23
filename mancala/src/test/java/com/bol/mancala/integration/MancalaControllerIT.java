@@ -7,9 +7,11 @@ import static org.mockito.Mockito.times;
 import com.bol.mancala.AbstractIT;
 import com.bol.mancala.IT;
 import com.bol.mancala.game.Game;
+import com.bol.mancala.game.exception.DataNotFoundException;
 import com.bol.mancala.infra.adapter.data.mongo.document.MancalaGameDocument;
 import com.bol.mancala.infra.adapter.data.mongo.respository.MancalaMongoRepository;
 import com.bol.mancala.infra.adapter.rest.dto.request.CreateGameRequest;
+import com.bol.mancala.infra.adapter.rest.dto.response.ErrorResponse;
 import com.bol.mancala.infra.adapter.rest.dto.response.GameResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -22,7 +24,6 @@ import org.springframework.http.MediaType;
 import org.springframework.util.ResourceUtils;
 import reactor.core.publisher.Mono;
 
-//TODO: worse case tests
 @IT
 class MancalaControllerIT extends AbstractIT {
 
@@ -30,6 +31,8 @@ class MancalaControllerIT extends AbstractIT {
   private MancalaMongoRepository mancalaMongoRepository;
   private final ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
   private final ParameterizedTypeReference<GameResponse> gameResponseType = new ParameterizedTypeReference<>() {
+  };
+  private final ParameterizedTypeReference<ErrorResponse> errorResponseType = new ParameterizedTypeReference<>() {
   };
 
 
@@ -66,6 +69,33 @@ class MancalaControllerIT extends AbstractIT {
                   .returns(expected.id(), from(GameResponse::id))
                   .returns(expected.board().getPits(), from(GameResponse::pits))
                   .returns(expected.players().current(), from(GameResponse::current));
+            }
+        );
+  }
+
+  @SneakyThrows
+  @Test
+  void shouldNotCreateInvalidArgs() {
+    //given:
+    final int INVALID_AMOUNT = -1;
+    final CreateGameRequest createGameRequest = new CreateGameRequest(INVALID_AMOUNT, INVALID_AMOUNT);
+
+    //when and then
+    this.webTestClient.post()
+        .uri("/api/v1/mancala")
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaType.APPLICATION_JSON)
+        .body(Mono.just(createGameRequest), CreateGameRequest.class)
+        .exchange()
+        .expectStatus()
+        .is4xxClientError()
+        .expectHeader()
+        .contentType(MediaType.APPLICATION_JSON)
+        .expectBody(this.errorResponseType)
+        .consumeWith(response -> {
+              final ErrorResponse body = response.getResponseBody();
+              assertThat(body).isNotNull()
+                  .returns("400", from(ErrorResponse::errorCode));
             }
         );
   }
@@ -143,6 +173,34 @@ class MancalaControllerIT extends AbstractIT {
                   .returns(expected.board().getPits(), from(GameResponse::pits))
                   .returns(expected.players().players(), from(GameResponse::players))
                   .returns(expected.players().current(), from(GameResponse::current));
+            }
+        );
+
+    Mockito.verify(this.mancalaMongoRepository, times(1)).findById(gameId);
+  }
+
+  @SneakyThrows
+  @Test
+  void dataNotFound() {
+    //given:
+    final String gameId = "INVALID_ID";
+
+    Mockito.when(this.mancalaMongoRepository.findById(gameId))
+        .thenThrow(new DataNotFoundException("Game not found for id: " + gameId));
+
+    //when and then
+    this.webTestClient.get()
+        .uri("/api/v1/mancala/{gameId}", gameId)
+        .exchange()
+        .expectStatus().is4xxClientError()
+        .expectHeader()
+        .contentType(MediaType.APPLICATION_JSON)
+        .expectBody(this.errorResponseType)
+        .consumeWith(response -> {
+              final ErrorResponse body = response.getResponseBody();
+              assertThat(body).isNotNull()
+                  .returns("Game not found for id: INVALID_ID", from(ErrorResponse::message))
+                  .returns("404", from(ErrorResponse::errorCode));
             }
         );
 
