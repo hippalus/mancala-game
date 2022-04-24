@@ -7,6 +7,7 @@ import static org.mockito.Mockito.times;
 import com.bol.mancala.AbstractIT;
 import com.bol.mancala.IT;
 import com.bol.mancala.game.Game;
+import com.bol.mancala.game.Player;
 import com.bol.mancala.game.exception.DataNotFoundException;
 import com.bol.mancala.infra.adapter.data.mongo.document.MancalaGameDocument;
 import com.bol.mancala.infra.adapter.data.mongo.respository.MancalaMongoRepository;
@@ -40,7 +41,9 @@ class MancalaControllerIT extends AbstractIT {
   @Test
   void create() {
     //given:
-    final CreateGameRequest createGameRequest = new CreateGameRequest(6, 14);
+    final Player firstPlayer = new Player("Player 1", 6);
+    final Player secondPlayer = new Player("Player 2", 13);
+    final CreateGameRequest createGameRequest = new CreateGameRequest(6, 14, firstPlayer, secondPlayer);
 
     final MancalaGameDocument gameDocument = this.objectMapper.readValue(
         ResourceUtils.getFile("src/test/resources/new-game.json"),
@@ -78,7 +81,7 @@ class MancalaControllerIT extends AbstractIT {
   void shouldNotCreateInvalidArgs() {
     //given:
     final int INVALID_AMOUNT = -1;
-    final CreateGameRequest createGameRequest = new CreateGameRequest(INVALID_AMOUNT, INVALID_AMOUNT);
+    final CreateGameRequest createGameRequest = new CreateGameRequest(INVALID_AMOUNT, INVALID_AMOUNT, null, null);
 
     //when and then
     this.webTestClient.post()
@@ -96,6 +99,7 @@ class MancalaControllerIT extends AbstractIT {
               final ErrorResponse body = response.getResponseBody();
               assertThat(body).isNotNull()
                   .returns("400", from(ErrorResponse::errorCode));
+              System.out.println(body.message());
             }
         );
   }

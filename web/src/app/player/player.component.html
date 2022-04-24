@@ -1,0 +1,18 @@
+<section class="login-container">
+  <mat-card class="player-card">
+    <mat-card-title>Please enter player names</mat-card-title>
+    <form [formGroup]="playerForm">
+      <mat-card-content class="player-card--content">
+        <mat-form-field>
+          <input matInput formControlName="player1" placeholder="Player 1">
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput formControlName="player2" placeholder="Player 2">
+        </mat-form-field>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button (click)="createGame()">Start Game!</button>
+      </mat-card-actions>
+    </form>
+  </mat-card>
+</section>

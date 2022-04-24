@@ -29,10 +29,7 @@ public class MancalaMongoAdapter implements MancalaGamePort {
   @Override
   public Mono<Game> create(final GameOptions gameOptions) {
     final Board board = new BoardImpl(gameOptions.stoneAmount(), gameOptions.pitAmount());
-    final Players players = new PlayersImpl(
-        new Player("Player 1", board.firstBigPitPosition()),
-        new Player("Player 2", board.secondBigPitPosition())
-    );
+    final Players players = new PlayersImpl(gameOptions.firstPlayer(),gameOptions.secondPlayer());
     final Game game = new GameImpl(null, board, players);
     return this.mancalaMongoRepository.save(this.toDocument(game)).map(MancalaGameDocument::toModel);
   }

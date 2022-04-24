@@ -8,6 +8,7 @@ import com.bol.mancala.IT;
 import com.bol.mancala.game.Game;
 import com.bol.mancala.game.GameOptions;
 import com.bol.mancala.game.Pit;
+import com.bol.mancala.game.Player;
 import com.bol.mancala.game.exception.DataNotFoundException;
 import com.bol.mancala.infra.adapter.data.mongo.MancalaMongoAdapter;
 import com.bol.mancala.infra.adapter.data.mongo.document.MancalaGameDocument;
@@ -41,7 +42,13 @@ class MancalaMongoAdapterIT extends AbstractIT {
 
   @Test
   void create() {
-    this.mancalaMongoAdapter.create(new GameOptions(6, 14))
+    //given:
+    final Player firstPlayer = new Player("Player 1", 6);
+    final Player secondPlayer = new Player("Player 2", 13);
+    final GameOptions gameOptions = new GameOptions(6, 14, firstPlayer, secondPlayer);
+
+    //when and then:
+    this.mancalaMongoAdapter.create(gameOptions)
         .log()
         .as(StepVerifier::create)
         .consumeNextWith(game -> {
