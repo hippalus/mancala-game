@@ -43,7 +43,7 @@ public final class GameImpl implements Game {
 
     final Pit bigPit = this.board().getBigPit(position);
 
-    if (!this.board().isBigPit(position + selectedStones)) {
+    if (!this.board().isBigPit(targetPositionOfMove)) {
       this.players().turn();
       if (lastInEmptyPit) {
         final Pit oppositePit = this.board().getOppositePit(targetPositionOfMove);

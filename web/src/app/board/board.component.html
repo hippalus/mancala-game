@@ -3,3 +3,31 @@
     <span>Mancala Game</span>
   </mat-toolbar-row>
 </mat-toolbar>
+<mat-card>
+  <mat-card-content style="display: flex; flex-direction: column;">
+    <span>Current turn: {{game?.current?.name}}</span>
+  </mat-card-content>
+</mat-card>
+<div class="board">
+  <div class="player-two store"><p>{{board?.[13]?.stones || 0}}</p></div>
+  <div class="rows">
+    <div class="row player-two">
+      <div class="pit" (click)="move(7)"><p>{{board?.[7]?.stones || 0}}</p></div>
+      <div class="pit" (click)="move(8)"><p>{{board?.[8]?.stones || 0}}</p></div>
+      <div class="pit" (click)="move(9)"><p>{{board?.[9]?.stones || 0}}</p></div>
+      <div class="pit" (click)="move(10)"><p>{{board?.[10]?.stones || 0}}</p></div>
+      <div class="pit" (click)="move(11)"><p>{{board?.[11]?.stones || 0}}</p></div>
+      <div class="pit" (click)="move(12)"><p>{{board?.[12]?.stones || 0}}</p></div>
+    </div>
+
+    <div class="row">
+      <div class="pit" (click)="move(0)"><p>{{board?.[0]?.stones || 0}}</p></div>
+      <div class="pit" (click)="move(1)"><p>{{board?.[1]?.stones || 0}}</p></div>
+      <div class="pit" (click)="move(2)"><p>{{board?.[2]?.stones || 0}}</p></div>
+      <div class="pit" (click)="move(3)"><p>{{board?.[3]?.stones || 0}}</p></div>
+      <div class="pit" (click)="move(4)"><p>{{board?.[4]?.stones || 0}}</p></div>
+      <div class="pit" (click)="move(5)"><p>{{board?.[5]?.stones || 0}}</p></div>
+    </div>
+  </div>
+  <div class="player-one store"><p>{{board?.[6]?.stones || 0}}</p></div>
+</div>

@@ -19,13 +19,13 @@ export class GameClient {
 
   public create(createGameRequest: CreateGameRequest): Observable<Game> {
     if (createGameRequest === null || createGameRequest === undefined) {
-      throw new Error('Required parameter NewGameCommand was null or undefined when calling newGame.');
+      throw new Error('Required parameter createGameRequest was null or undefined when calling create Game.');
     }
     const url = this.basePath + `/api/v1/mancala`;
     return this.httpClient.post<Game>(url, createGameRequest, {headers: this.prepareDefaultHeaders()});
   }
 
-  public retrieve(gameId: string, observe: any = 'body', reportProgress: boolean = false): Observable<Game> {
+  public retrieve(gameId: string): Observable<Game> {
     if (gameId === null || gameId === undefined) {
       throw new Error('Required parameter gameId was null or undefined when calling retrieveGame.');
     }
@@ -38,7 +38,7 @@ export class GameClient {
       throw new Error('Required parameter gameId was null or undefined when calling play.');
     }
     if (position === null || position === undefined) {
-      throw new Error('Required parameter move was null or undefined when calling play.');
+      throw new Error('Required parameter position was null or undefined when calling play.');
     }
     const url = this.basePath + `/api/v1/mancala/${encodeURIComponent(String(gameId))}/move/` + position;
     return this.httpClient.put<Game>(url, null, {headers: this.prepareDefaultHeaders()});

@@ -1,0 +1,55 @@
+.board {
+  margin: 30px auto;
+  display: flex;
+  flex-flow: row;
+  border: 1px solid #bbb;
+  box-shadow: 0 0 5px #bbb;
+  width: 1080px;
+  height: 512px;
+  max-width: 100%;
+  resize: both;
+  overflow-x: auto;
+  background: url('../../assets/wood.jpeg');
+  border-radius: 20px;
+}
+
+.rows {
+  flex: 7;
+  display: flex;
+  flex-direction: column;
+}
+
+.store {
+  flex: 1;
+  font-family: medium, "JetBrains Mono", monospace;
+  font-size: 24px;
+  border-radius: 40px;
+  color: greenyellow;
+}
+
+.row {
+  flex: 1;
+  display: flex;
+
+  &.player-two {
+    flex-direction: row-reverse;
+  }
+}
+
+.store, .pit {
+  margin: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, .15);
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, .5);
+  cursor: pointer;
+}
+
+.pit {
+  flex: 1;
+  font-family: medium, "JetBrains Mono", monospace;
+  font-size: 24px;
+  border-radius: 40%;
+  color: white;
+}

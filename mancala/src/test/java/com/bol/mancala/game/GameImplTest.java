@@ -282,6 +282,35 @@ class GameImplTest {
 
   }
 
+  @Test
+  void oppositePitTest() {
+    //given:
+
+    final Game game = new GameImpl(
+        UUID.randomUUID().toString(),
+        new BoardImpl(List.of(
+            new Pit(0, 0),
+            new Pit(1, 1),
+            new Pit(2, 0),
+            new Pit(3, 10),
+            new Pit(4, 10),
+            new Pit(5, 2),
+            new Pit(6, 4),
+            new Pit(7, 2),
+            new Pit(8, 10),
+            new Pit(9, 0),
+            new Pit(10, 4),
+            new Pit(11, 2),
+            new Pit(12, 12),
+            new Pit(13, 3)
+        )),
+        new PlayersImpl(JOHN, MARY)
+    );
+    //when and then:
+    game.play(Move.of(JOHN, 3));
+    verifyBoard(game.board(), 0, 1, 0, 0, 11, 3, 19, 3, 11, 1, 5, 3, 0, 3);
+  }
+
   private void verifyBoard(final Board board, final Integer... pitStones) {
     assertThat(board.size()).isEqualTo(pitStones.length);
     final List<Integer> actualStones = board.getPits().stream().map(Pit::getStones).toList();
