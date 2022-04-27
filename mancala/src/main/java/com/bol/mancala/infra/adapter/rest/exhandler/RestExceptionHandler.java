@@ -58,6 +58,7 @@ public class RestExceptionHandler {
   @ExceptionHandler(MancalaGameException.class)
   @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
   public ResponseEntity<ErrorResponse> handleMancalaGameException(final MancalaGameException ex) {
+    log.debug("Bad request!", ex);
     return ResponseEntity.unprocessableEntity()
         .body(new ErrorResponse("422", ex.getMessage()));
   }
@@ -65,6 +66,7 @@ public class RestExceptionHandler {
   @ExceptionHandler(DataNotFoundException.class)
   @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
   public ResponseEntity<ErrorResponse> handleNotFoundException(final DataNotFoundException ex) {
+    log.debug("Bad request!", ex);
     return ResponseEntity.unprocessableEntity()
         .body(new ErrorResponse("404", ex.getMessage()));
   }

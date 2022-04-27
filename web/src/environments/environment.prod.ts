@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  mancalaApiUrl: 'http://localhost:8081'
 };

@@ -4,6 +4,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Game} from "./model/game";
 import {CreateGameRequest} from "./model/create.game.request";
+import {environment} from "../../environments/environment";
 
 
 @Injectable({
@@ -11,7 +12,6 @@ import {CreateGameRequest} from "./model/create.game.request";
 })
 export class GameClient {
 
-  protected basePath = 'http://localhost:8081';
   protected defaultHeaders = new HttpHeaders();
 
   constructor(protected readonly httpClient: HttpClient) {
@@ -21,7 +21,7 @@ export class GameClient {
     if (createGameRequest === null || createGameRequest === undefined) {
       throw new Error('Required parameter createGameRequest was null or undefined when calling create Game.');
     }
-    const url = this.basePath + `/api/v1/mancala`;
+    const url = environment.mancalaApiUrl + `/api/v1/mancala`;
     return this.httpClient.post<Game>(url, createGameRequest, {headers: this.prepareDefaultHeaders()});
   }
 
@@ -29,7 +29,7 @@ export class GameClient {
     if (gameId === null || gameId === undefined) {
       throw new Error('Required parameter gameId was null or undefined when calling retrieveGame.');
     }
-    const url = this.basePath + `/api/v1/mancala/${encodeURIComponent(String(gameId))}`;
+    const url = environment.mancalaApiUrl + `/api/v1/mancala/${encodeURIComponent(String(gameId))}`;
     return this.httpClient.get<Game>(url, {headers: this.prepareDefaultHeaders()});
   }
 
@@ -40,7 +40,7 @@ export class GameClient {
     if (position === null || position === undefined) {
       throw new Error('Required parameter position was null or undefined when calling play.');
     }
-    const url = this.basePath + `/api/v1/mancala/${encodeURIComponent(String(gameId))}/move/` + position;
+    const url = environment.mancalaApiUrl + `/api/v1/mancala/${encodeURIComponent(String(gameId))}/move/` + position;
     return this.httpClient.put<Game>(url, null, {headers: this.prepareDefaultHeaders()});
   }
 

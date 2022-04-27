@@ -10,8 +10,6 @@ services:
       - "27017:27017"
 
   mancala-api:
-    container_name: mancala-api
-    image: mancala-api
     build:
       context: ../mancala
       dockerfile: Dockerfile
@@ -22,3 +20,9 @@ services:
     environment:
       - SPRING_DATA_MONGODB_URI=mongodb://root:root123@mancala-db:27017
       - SPRING_DATA_MONGODB_DATABASE=mancala-db
+  mancala-web:
+    build:
+      context: ../web
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
