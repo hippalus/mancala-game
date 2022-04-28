@@ -64,9 +64,9 @@ public final class BoardImpl implements Board {
   @Override
   public Pit getBigPit(final int position) {
     if (position < this.size() / 2) {
-      return this.getPit(this.firstBigPitPosition());
+      return this.firstBigPit();
     }
-    return this.getPit(this.secondBigPitPosition());
+    return this.secondBigPit();
   }
 
   @Override

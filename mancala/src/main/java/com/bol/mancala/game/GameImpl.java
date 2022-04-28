@@ -3,8 +3,11 @@ package com.bol.mancala.game;
 import com.bol.mancala.game.exception.MancalaGameException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public final class GameImpl implements Game {
 
   private final String id;
@@ -13,10 +16,7 @@ public final class GameImpl implements Game {
   private final AtomicBoolean isGameOver;
 
   public GameImpl(final String id, final Board board, final Players players) {
-    this.id = id;
-    this.board = board;
-    this.players = players;
-    this.isGameOver = new AtomicBoolean(false);
+    this(id, board, players, new AtomicBoolean(false));
   }
 
   @Override
@@ -96,8 +96,8 @@ public final class GameImpl implements Game {
   }
 
   private int getTotalStonesOnSide(final int position) {
-    final List<Pit> pissOnSide = this.board.getPitsOnSide(position);
-    return pissOnSide.stream().map(Pit::getStones).reduce(Integer::sum).orElse(-1);
+    final List<Pit> pitsOnSide = this.board.getPitsOnSide(position);
+    return pitsOnSide.stream().map(Pit::getStones).reduce(Integer::sum).orElse(0);
   }
 
   @Override
@@ -119,4 +119,21 @@ public final class GameImpl implements Game {
   public Players players() {
     return this.players;
   }
+
+  @Override
+  public Optional<Winner> winner() {
+    if (!this.isGameOver()) {
+      return Optional.empty();
+    }
+
+    final Pit firstBigPit = this.board().firstBigPit();
+    final Pit secondBigPit = this.board().secondBigPit();
+    final Pit maxScoreBigPit = firstBigPit.getStones() > secondBigPit.getStones() ? firstBigPit : secondBigPit;
+
+    return this.players().players().stream()
+        .filter(player -> player.bigPitPosition() == maxScoreBigPit.position())
+        .map(player -> new Winner(player, maxScoreBigPit.getStones()))
+        .findFirst();
+  }
+
 }

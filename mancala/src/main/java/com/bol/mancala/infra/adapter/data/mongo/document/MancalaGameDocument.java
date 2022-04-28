@@ -3,11 +3,11 @@ package com.bol.mancala.infra.adapter.data.mongo.document;
 import com.bol.mancala.game.BoardImpl;
 import com.bol.mancala.game.Game;
 import com.bol.mancala.game.GameImpl;
-import com.bol.mancala.game.Player;
 import com.bol.mancala.game.PlayersImpl;
 import java.time.LocalDateTime;
 import java.util.ArrayDeque;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,6 +34,12 @@ public class MancalaGameDocument {
   @Field(name = "players")
   private List<PlayerDocument> players;
 
+  @Field(name = "game_over")
+  private boolean gameOver;
+
+  @Field(name = "winner")
+  private WinnerDocument winner;
+
   @CreatedDate
   @Field(name = "created_at")
   private LocalDateTime createdAt;
@@ -46,7 +52,8 @@ public class MancalaGameDocument {
     return new GameImpl(
         this.getId(),
         new BoardImpl(this.getPits().stream().map(PitDocument::toModel).toList()),
-        new PlayersImpl(new ArrayDeque<>(this.getPlayers().stream().map(PlayerDocument::toModel).toList()))
+        new PlayersImpl(new ArrayDeque<>(this.getPlayers().stream().map(PlayerDocument::toModel).toList())),
+        new AtomicBoolean(this.isGameOver())
     );
   }
 }

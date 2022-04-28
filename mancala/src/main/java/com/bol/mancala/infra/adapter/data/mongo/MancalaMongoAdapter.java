@@ -10,12 +10,15 @@ import com.bol.mancala.game.Pit;
 import com.bol.mancala.game.Player;
 import com.bol.mancala.game.Players;
 import com.bol.mancala.game.PlayersImpl;
+import com.bol.mancala.game.Winner;
 import com.bol.mancala.game.exception.DataNotFoundException;
 import com.bol.mancala.game.port.MancalaGamePort;
 import com.bol.mancala.infra.adapter.data.mongo.document.MancalaGameDocument;
 import com.bol.mancala.infra.adapter.data.mongo.document.PitDocument;
 import com.bol.mancala.infra.adapter.data.mongo.document.PlayerDocument;
+import com.bol.mancala.infra.adapter.data.mongo.document.WinnerDocument;
 import com.bol.mancala.infra.adapter.data.mongo.respository.MancalaMongoRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -29,7 +32,7 @@ public class MancalaMongoAdapter implements MancalaGamePort {
   @Override
   public Mono<Game> create(final GameOptions gameOptions) {
     final Board board = new BoardImpl(gameOptions.stoneAmount(), gameOptions.pitAmount());
-    final Players players = new PlayersImpl(gameOptions.firstPlayer(),gameOptions.secondPlayer());
+    final Players players = new PlayersImpl(gameOptions.firstPlayer(), gameOptions.secondPlayer());
     final Game game = new GameImpl(null, board, players);
     return this.mancalaMongoRepository.save(this.toDocument(game)).map(MancalaGameDocument::toModel);
   }
@@ -60,7 +63,16 @@ public class MancalaMongoAdapter implements MancalaGamePort {
         .id(game.id())
         .pits(game.board().getPits().stream().map(this::toDocument).toList())
         .players(game.players().players().stream().map(this::toDocument).toList())
+        .gameOver(game.isGameOver())
+        .winner(this.toDocument(game.winner()))
         .build();
+  }
+
+  private WinnerDocument toDocument(final Optional<Winner> winner) {
+    return winner.stream()
+        .map(w -> new WinnerDocument(toDocument(w.winner()), w.score()))
+        .findFirst()
+        .orElse(null);
   }
 
   private PitDocument toDocument(final Pit pit) {

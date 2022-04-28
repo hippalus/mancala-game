@@ -183,10 +183,10 @@ class GameImplTest {
                 new Pit(0, 0),
                 new Pit(1, 0),
                 new Pit(2, 0),
-                new Pit(3, 0),
+                new Pit(3, 1),
                 new Pit(4, 0),
                 new Pit(5, 0),
-                new Pit(6, 22),
+                new Pit(6, 21),
                 new Pit(7, 0),
                 new Pit(8, 0),
                 new Pit(9, 0),
@@ -205,6 +205,8 @@ class GameImplTest {
     //then:
     verifyBoard(game.board(), 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 0, 0, 50);
     assertThat(game.isGameOver()).isTrue();
+    final Winner winner = game.winner().orElse(null);
+    assertThat(winner).isNotNull().isEqualTo(new Winner(MARY, 50));
 
     //and then:
     final Exception exception = catchException(() -> game.play(Move.of(JOHN, 0)));

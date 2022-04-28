@@ -1,5 +1,7 @@
 package com.bol.mancala.game;
 
+import java.util.Optional;
+
 public interface Game {
 
   String id();
@@ -13,5 +15,7 @@ public interface Game {
   boolean isGameOver();
 
   Players players();
+
+  Optional<Winner> winner();
 
 }

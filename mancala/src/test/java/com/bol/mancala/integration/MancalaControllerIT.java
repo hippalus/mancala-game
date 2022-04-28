@@ -2,6 +2,7 @@ package com.bol.mancala.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 
 import com.bol.mancala.AbstractIT;
@@ -14,6 +15,7 @@ import com.bol.mancala.infra.adapter.data.mongo.respository.MancalaMongoReposito
 import com.bol.mancala.infra.adapter.rest.dto.request.CreateGameRequest;
 import com.bol.mancala.infra.adapter.rest.dto.response.ErrorResponse;
 import com.bol.mancala.infra.adapter.rest.dto.response.GameResponse;
+import com.bol.mancala.infra.adapter.rest.dto.response.WinnerResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.SneakyThrows;
@@ -209,5 +211,50 @@ class MancalaControllerIT extends AbstractIT {
         );
 
     Mockito.verify(this.mancalaMongoRepository, times(1)).findById(gameId);
+  }
+
+  @SneakyThrows
+  @Test
+  void gameOverAndWinnerTest() {
+    //given:
+    final String gameId = "6261d18d701e87233773de98";
+
+    final MancalaGameDocument mancalaGameDocument = this.objectMapper.readValue(
+        ResourceUtils.getFile("src/test/resources/before-game-over.json"),
+        MancalaGameDocument.class
+    );
+
+    final MancalaGameDocument afterMove = this.objectMapper.readValue(
+        ResourceUtils.getFile("src/test/resources/after-game-over.json"),
+        MancalaGameDocument.class
+    );
+
+    Mockito.when(this.mancalaMongoRepository.findById(gameId))
+        .thenReturn(Mono.just(mancalaGameDocument));
+
+    Mockito.when(this.mancalaMongoRepository.save(any()))
+        .thenReturn(Mono.just(afterMove));
+
+    final WinnerResponse expected = new WinnerResponse(new Player("Player 2", 13), 42);
+
+    //when and then
+    this.webTestClient.put()
+        .uri("/api/v1/mancala/{gameId}/move/{position}", gameId, 12)
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectHeader()
+        .contentType(MediaType.APPLICATION_JSON)
+        .expectBody(this.gameResponseType)
+        .consumeWith(response -> {
+              final GameResponse body = response.getResponseBody();
+              assertThat(body).isNotNull()
+                  .returns(true, from(GameResponse::isGameOver))
+                  .returns(expected, from(GameResponse::winner));
+            }
+        );
+
+    Mockito.verify(this.mancalaMongoRepository, times(1)).findById(gameId);
+    Mockito.verify(this.mancalaMongoRepository, times(1)).save(Mockito.any());
   }
 }

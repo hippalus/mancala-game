@@ -7,6 +7,10 @@
   <mat-card-content style="display: flex; flex-direction: column;">
     <span>Current turn: {{game?.current?.name}}</span>
   </mat-card-content>
+  <mat-card-content style="display: flex; flex-direction: column;">
+    <span *ngIf="this.game?.isGameOver">Winner: {{this.game?.winner?.winner?.name}}</span>
+    <span *ngIf="this.game?.isGameOver">Score: {{this.game?.winner?.score}}</span>
+  </mat-card-content>
 </mat-card>
 <div class="board">
   <div class="player-two store"><p>{{board?.[13]?.stones || 0}}</p></div>

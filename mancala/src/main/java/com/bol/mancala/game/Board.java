@@ -29,4 +29,12 @@ public interface Board {
   default int secondBigPitPosition() {
     return this.size() - 1;
   }
+
+  default Pit firstBigPit() {
+    return this.getPit(this.firstBigPitPosition());
+  }
+
+  default Pit secondBigPit() {
+    return this.getPit(this.secondBigPitPosition());
+  }
 }
