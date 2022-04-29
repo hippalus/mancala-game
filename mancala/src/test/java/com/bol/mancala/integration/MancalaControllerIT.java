@@ -257,4 +257,49 @@ class MancalaControllerIT extends AbstractIT {
     Mockito.verify(this.mancalaMongoRepository, times(1)).findById(gameId);
     Mockito.verify(this.mancalaMongoRepository, times(1)).save(Mockito.any());
   }
+
+  @SneakyThrows
+  @Test
+  void gameOverAndWinnerTest2() {
+    //given:
+    final String gameId = "6261d18d701e87233773de98";
+
+    final MancalaGameDocument mancalaGameDocument = this.objectMapper.readValue(
+        ResourceUtils.getFile("src/test/resources/before-game-over-2.json"),
+        MancalaGameDocument.class
+    );
+
+    final MancalaGameDocument afterMove = this.objectMapper.readValue(
+        ResourceUtils.getFile("src/test/resources/after-game-over-2.json"),
+        MancalaGameDocument.class
+    );
+
+    Mockito.when(this.mancalaMongoRepository.findById(gameId))
+        .thenReturn(Mono.just(mancalaGameDocument));
+
+    Mockito.when(this.mancalaMongoRepository.save(any()))
+        .thenReturn(Mono.just(afterMove));
+
+    final WinnerResponse expected = new WinnerResponse(new Player("Player 1", 6), 41);
+
+    //when and then
+    this.webTestClient.put()
+        .uri("/api/v1/mancala/{gameId}/move/{position}", gameId, 2)
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectHeader()
+        .contentType(MediaType.APPLICATION_JSON)
+        .expectBody(this.gameResponseType)
+        .consumeWith(response -> {
+              final GameResponse body = response.getResponseBody();
+              assertThat(body).isNotNull()
+                  .returns(true, from(GameResponse::isGameOver))
+                  .returns(expected, from(GameResponse::winner));
+            }
+        );
+
+    Mockito.verify(this.mancalaMongoRepository, times(1)).findById(gameId);
+    Mockito.verify(this.mancalaMongoRepository, times(1)).save(Mockito.any());
+  }
 }

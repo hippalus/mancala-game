@@ -1,0 +1,71 @@
+{
+  "id": "6261d18d701e87233773de98",
+  "pits": [
+    {
+      "position": 0,
+      "stones": 0
+    },
+    {
+      "position": 1,
+      "stones": 0
+    },
+    {
+      "position": 2,
+      "stones": 1
+    },
+    {
+      "position": 3,
+      "stones": 0
+    },
+    {
+      "position": 4,
+      "stones": 0
+    },
+    {
+      "position": 5,
+      "stones": 0
+    },
+    {
+      "position": 6,
+      "stones": 39
+    },
+    {
+      "position": 7,
+      "stones": 0
+    },
+    {
+      "position": 8,
+      "stones": 0
+    },
+    {
+      "position": 9,
+      "stones": 1
+    },
+    {
+      "position": 10,
+      "stones": 1
+    },
+    {
+      "position": 11,
+      "stones": 2
+    },
+    {
+      "position": 12,
+      "stones": 3
+    },
+    {
+      "position": 13,
+      "stones": 25
+    }
+  ],
+  "players": [
+    {
+      "name": "Player 1",
+      "bigPitPosition": 6
+    },
+    {
+      "name": "Player 2",
+      "bigPitPosition": 13
+    }
+  ]
+}
