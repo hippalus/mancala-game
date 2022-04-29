@@ -5,3 +5,8 @@ spring:
       uri: mongodb://root:root123@localhost:27017
 server:
   port: 8081
+springdoc:
+  swagger-ui:
+    path: /swagger-doc/swagger-ui.html
+  api-docs:
+    path: /swagger-doc/v3/api-docs

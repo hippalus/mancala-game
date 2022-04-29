@@ -3,6 +3,8 @@ package com.bol.mancala.infra.adapter.rest;
 import com.bol.mancala.game.port.MancalaGamePort;
 import com.bol.mancala.infra.adapter.rest.dto.request.CreateGameRequest;
 import com.bol.mancala.infra.adapter.rest.dto.response.GameResponse;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import reactor.core.publisher.Mono;
 @Validated
 @RestController
 @RequiredArgsConstructor
+@OpenAPIDefinition(info = @Info(title = "Mancala Game", version = "1.0", description = "Documentation APIs v1.0"))
 @RequestMapping("/api/v1/mancala")
 public class MancalaController {
 

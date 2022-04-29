@@ -16,7 +16,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
 @Builder
@@ -24,28 +23,15 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @NoArgsConstructor
 @Document(collection = "mancala_game")
 public class MancalaGameDocument {
-
   @Id
   private String id;
-
-  @Field(name = "pits")
   private List<PitDocument> pits;
-
-  @Field(name = "players")
   private List<PlayerDocument> players;
-
-  @Field(name = "game_over")
   private boolean gameOver;
-
-  @Field(name = "winner")
   private WinnerDocument winner;
-
   @CreatedDate
-  @Field(name = "created_at")
   private LocalDateTime createdAt;
-
   @LastModifiedDate
-  @Field(name = "updated_at")
   private LocalDateTime updatedAt;
 
   public Game toModel() {
