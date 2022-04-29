@@ -33,6 +33,6 @@ cd mancala/
 
 ## API Reference
 
-- http://localhost:8081/swagger-doc/webjars/swagger-ui/index.html
+- http://localhost:8081/swagger-ui.html
 
 
