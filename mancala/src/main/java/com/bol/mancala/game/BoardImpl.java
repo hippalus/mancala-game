@@ -22,7 +22,7 @@ public final class BoardImpl implements Board {
   }
 
   private static List<Pit> initPits(final int stoneAmount, final int pitAmount) {
-    final List<Pit> pits = new ArrayList<>();
+    final List<Pit> pits = new ArrayList<>(pitAmount);
     final int firstBigPitPosition = pitAmount / 2 - 1;
     final int secondBigPitPosition = pitAmount - 1;
     for (int position = 0; position < pitAmount; position++) {
@@ -49,7 +49,7 @@ public final class BoardImpl implements Board {
 
   @Override
   public boolean isBigPit(final int position) {
-    return position == firstBigPitPosition() || position == secondBigPitPosition();
+    return position == this.firstBigPitPosition() || position == this.secondBigPitPosition();
   }
 
   @Override

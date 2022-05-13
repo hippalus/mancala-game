@@ -86,16 +86,16 @@ public class RestExceptionHandler {
   public ResponseEntity<ErrorResponse> handle(final ConstraintViolationException exception) {
     final String errorMessage = exception.getConstraintViolations()
         .stream()
-        .map(this::violationMessage)
+        .map(RestExceptionHandler::violationMessage)
         .collect(Collectors.joining(" && "));
     return ResponseEntity.badRequest().body(new ErrorResponse("400", errorMessage));
   }
 
-  private String violationMessage(final ConstraintViolation<?> violation) {
+  private static String violationMessage(final ConstraintViolation<?> violation) {
     return violation.getRootBeanClass().getName() + " " + violation.getPropertyPath() + ": " + violation.getMessage();
   }
 
-  private ResponseEntity<ErrorResponse> createFieldErrorResponse(final Errors bindingResult) {
+  private static ResponseEntity<ErrorResponse> createFieldErrorResponse(final Errors bindingResult) {
     final String errorMessage = bindingResult
         .getFieldErrors().stream()
         .map(FieldError::getField)

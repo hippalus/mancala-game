@@ -14,6 +14,6 @@ public class PlayerDocument {
   private int bigPitPosition;
 
   public Player toModel() {
-    return new Player(this.getName(), this.getBigPitPosition());
+    return new Player(this.name, this.bigPitPosition);
   }
 }

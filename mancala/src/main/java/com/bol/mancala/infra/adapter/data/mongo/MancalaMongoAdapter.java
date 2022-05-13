@@ -34,7 +34,7 @@ public class MancalaMongoAdapter implements MancalaGamePort {
     final Board board = new BoardImpl(gameOptions.stoneAmount(), gameOptions.pitAmount());
     final Players players = new PlayersImpl(gameOptions.firstPlayer(), gameOptions.secondPlayer());
     final Game game = new GameImpl(null, board, players);
-    return this.mancalaMongoRepository.save(this.toDocument(game)).map(MancalaGameDocument::toModel);
+    return this.mancalaMongoRepository.save(MancalaMongoAdapter.toDocument(game)).map(MancalaGameDocument::toModel);
   }
 
   @Override
@@ -50,7 +50,7 @@ public class MancalaMongoAdapter implements MancalaGamePort {
         .map(game -> {
           final Player current = game.players().current();
           final Game playedGame = game.play(Move.of(current, position));
-          return this.toDocument(playedGame);
+          return MancalaMongoAdapter.toDocument(playedGame);
         })
         .flatMap(this.mancalaMongoRepository::save)
         .map(MancalaGameDocument::toModel);
@@ -58,28 +58,28 @@ public class MancalaMongoAdapter implements MancalaGamePort {
   }
 
 
-  private MancalaGameDocument toDocument(final Game game) {
+  private static MancalaGameDocument toDocument(final Game game) {
     return MancalaGameDocument.builder()
         .id(game.id())
-        .pits(game.board().getPits().stream().map(this::toDocument).toList())
-        .players(game.players().players().stream().map(this::toDocument).toList())
+        .pits(game.board().getPits().stream().map(MancalaMongoAdapter::toDocument).toList())
+        .players(game.players().players().stream().map(MancalaMongoAdapter::toDocument).toList())
         .gameOver(game.isGameOver())
-        .winner(this.toDocument(game.winner()))
+        .winner(MancalaMongoAdapter.toDocument(game.winner()))
         .build();
   }
 
-  private WinnerDocument toDocument(final Optional<Winner> winner) {
+  private static WinnerDocument toDocument(final Optional<Winner> winner) {
     return winner.stream()
-        .map(w -> new WinnerDocument(toDocument(w.winner()), w.score()))
+        .map(w -> new WinnerDocument(MancalaMongoAdapter.toDocument(w.winner()), w.score()))
         .findFirst()
         .orElse(null);
   }
 
-  private PitDocument toDocument(final Pit pit) {
+  private static PitDocument toDocument(final Pit pit) {
     return new PitDocument(pit.position(), pit.getStones());
   }
 
-  private PlayerDocument toDocument(final Player player) {
+  private static PlayerDocument toDocument(final Player player) {
     return new PlayerDocument(player.name(), player.bigPitPosition());
   }
 }

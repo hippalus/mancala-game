@@ -36,10 +36,10 @@ public class MancalaGameDocument {
 
   public Game toModel() {
     return new GameImpl(
-        this.getId(),
-        new BoardImpl(this.getPits().stream().map(PitDocument::toModel).toList()),
-        new PlayersImpl(new ArrayDeque<>(this.getPlayers().stream().map(PlayerDocument::toModel).toList())),
-        new AtomicBoolean(this.isGameOver())
+        this.id,
+        new BoardImpl(this.pits.stream().map(PitDocument::toModel).toList()),
+        new PlayersImpl(new ArrayDeque<>(this.players.stream().map(PlayerDocument::toModel).toList())),
+        new AtomicBoolean(this.gameOver)
     );
   }
 }

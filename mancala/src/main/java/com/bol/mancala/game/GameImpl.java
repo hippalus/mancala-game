@@ -95,7 +95,7 @@ public final class GameImpl implements Game {
     }
   }
 
-  private int getTotalStonesOnSide(final int position) {
+  private Integer getTotalStonesOnSide(final int position) {
     final List<Pit> pitsOnSide = this.board.getPitsOnSide(position);
     return pitsOnSide.stream().map(Pit::getStones).reduce(Integer::sum).orElse(0);
   }

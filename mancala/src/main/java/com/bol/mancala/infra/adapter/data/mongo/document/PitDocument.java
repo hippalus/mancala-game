@@ -14,6 +14,6 @@ public class PitDocument {
   private int stones;
 
   public Pit toModel() {
-    return new Pit(this.getPosition(), this.getStones());
+    return new Pit(this.position, this.stones);
   }
 }
